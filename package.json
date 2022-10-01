@@ -1,0 +1,21 @@
+{
+  "name": "app-ocorrencias",
+  "version": "1.0.0",
+  "description": "App de ocorrências Evoy",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "keywords": [
+    "Electron",
+    "quick",
+    "start",
+    "tutorial",
+    "demo"
+  ],
+  "author": "https://github.com/DeividAlmeida",
+  "license": "CC0-1.0",
+  "devDependencies": {
+    "electron": "^20.2.0"
+  }
+}
