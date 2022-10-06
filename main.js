@@ -38,5 +38,5 @@ ipcMain.on("submitForm", async function (event, data) {
   const response =  await Service.Auth(data);
   if(response.status > 299) 
     return dialog.showErrorBox("Acesso negado", "Credenciais inválidas");
-  mainWindow.loadFile("./src/pages/main/main.html")
+  mainWindow.loadFile("./src/pages/actions/actions.html")
 })
