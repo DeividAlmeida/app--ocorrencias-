@@ -35,8 +35,21 @@ app.on("window-all-closed", function () {
 })
 
 ipcMain.on("submitForm", async function (event, data) {
-  const response =  await Service.Auth(data);
-  if(response.status > 299) 
-    return dialog.showErrorBox("Acesso negado", "Credenciais inválidas");
-  mainWindow.loadFile("./src/pages/actions/actions.html")
+  let Auth, reportsAuth, reportsSettings, reportsGeneralInfo;
+  try {
+    Auth =  await Service.Auth(data);
+    reportsAuth = await Service.reportsAuth(data);
+    mainWindow.loadFile("./src/pages/actions/actions.html")
+  } catch (error) {    
+    return dialog.showErrorBox("Acesso negado", `${error}`);
+  }
+
+  try {    
+    reportsSettings = await Service.reportsSettings(reportsAuth.data.accessToken);
+    reportsGeneralInfo = await Service.reportsGeneralInfo(reportsAuth.data.accessToken);
+  } catch (error) {
+    return dialog.showErrorBox("Erro", `${error}`);
+  }
+  
+  const filtedGeneralInfo =  Service.filtedGeneralInfo(reportsGeneralInfo.data, reportsSettings.data);
 })
