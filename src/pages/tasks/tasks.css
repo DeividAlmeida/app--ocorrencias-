@@ -67,16 +67,24 @@ section {
 }
 
 .body-content {
+  margin-top: 2rem;
   display: flex;
   -webkit-box-pack: center;
   justify-content: center;
   width: 100%;
   padding: 1rem 0rem;
   position: relative;
+  flex-flow: wrap;
+}
+
+.body-panel {
+  width: 95%;
+  display: flex;
+  margin-bottom: 1em;
+  justify-content: end;
 }
 
 .body-content > table {
-  margin-top: 2rem;
   width: 95%;
   padding: 1rem 0rem;
   background-color: rgb(255, 255, 255);
@@ -106,22 +114,22 @@ section {
   width: 100%;
 }
 
-.body-content > table > tbody {
+.table-body {
   margin: 0px;
   padding: 0px;
   box-sizing: border-box;
 }
 
-.row {
+.table-body > tr {
   display: flex;
   width: 100%;
 }
 
-.row:hover {
+.table-body > tr:hover {
   background-color: rgb(243, 245, 247);
 }
 
-.row > td {
+.table-body > tr > td {
   height: 4rem;
   width: 100%;
   min-height: 2.5rem;

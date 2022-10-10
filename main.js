@@ -38,18 +38,19 @@ ipcMain.on("submitForm", async function (event, data) {
   let Auth, reportsAuth, reportsSettings, reportsGeneralInfo;
   try {
     Auth =  await Service.Auth(data);
-    reportsAuth = await Service.reportsAuth(data);
-    mainWindow.loadFile("./src/pages/actions/actions.html")
-  } catch (error) {    
+    mainWindow.loadFile("./src/pages/tasks/tasks.html")
+  } catch (error) {
+    event.sender.send("submitFormError");
     return dialog.showErrorBox("Acesso negado", `${error}`);
   }
-
+  
   try {    
+    reportsAuth = await Service.reportsAuth(data);
     reportsSettings = await Service.reportsSettings(reportsAuth.data.accessToken);
     reportsGeneralInfo = await Service.reportsGeneralInfo(reportsAuth.data.accessToken);
+    const filtedGeneralInfo = await Service.filtedGeneralInfo(reportsGeneralInfo.data, reportsSettings.data);
+    event.sender.send("GeneralInfo", filtedGeneralInfo);
   } catch (error) {
     return dialog.showErrorBox("Erro", `${error}`);
   }
-  
-  const filtedGeneralInfo =  Service.filtedGeneralInfo(reportsGeneralInfo.data, reportsSettings.data);
 })

@@ -45,7 +45,15 @@ function Services(){
   }
 
   Services.prototype.filtedGeneralInfo = async function (generalInfo, settings){
-    return true ;
+    const data = generalInfo.filter(item=>{
+      if(item.battery_percentage < settings.battery_level_limit){
+        return true;
+      }
+      else if (["sem_sinal", "perdida"].includes(item.current_state)) {
+        return true;
+      }
+    })
+    return data ;
   }
 };
 
