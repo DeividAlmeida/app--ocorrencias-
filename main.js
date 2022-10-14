@@ -1,11 +1,14 @@
 const {app, BrowserWindow, ipcMain, dialog } = require("electron");
 const path = require("path");
 const Services  = require("./src/services/services");
+const LegacyData = require("./src/stores/legacy_data.json");
 var Service = new Services();
 var mainWindow;
+let Auth, reportsAuth, reportsSettings, reportsGeneralInfo;
 
 function createWindow () {
   mainWindow = new BrowserWindow({
+    title: "Evoy Ocorrências 1.0.0",
     fullscreen:false,
     icon: "./src/assets/icon.png",
     webPreferences: {
@@ -25,32 +28,53 @@ function createWindow () {
 app.whenReady().then(() => {
   createWindow();
 
-  app.on("activate", function () {
+  app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
 })
 
-app.on("window-all-closed", function () {
+app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit()
 })
 
-ipcMain.on("submitForm", async function (event, data) {
-  let Auth, reportsAuth, reportsSettings, reportsGeneralInfo;
+ipcMain.handle("submitForm", async (res, req) => {
   try {
-    Auth =  await Service.Auth(data);
+    Auth =  await Service.Auth(req);
+    reportsAuth = await Service.reportsAuth(req);
+    reportsSettings = await Service.reportsSettings(reportsAuth.data.accessToken);
+    res.returnValue = await  reportsSettings;
+    
     mainWindow.loadFile("./src/pages/tasks/tasks.html")
   } catch (error) {
-    event.sender.send("submitFormError");
-    return dialog.showErrorBox("Acesso negado", `${error}`);
+    dialog.showErrorBox("Acesso negado", `${error}`);
+    return "Acesso negado";
   }
-  
-  try {    
-    reportsAuth = await Service.reportsAuth(data);
-    reportsSettings = await Service.reportsSettings(reportsAuth.data.accessToken);
+})
+
+ipcMain.handle("getGeneralInfo", async (res, req) => {
+  try {
     reportsGeneralInfo = await Service.reportsGeneralInfo(reportsAuth.data.accessToken);
-    const filtedGeneralInfo = await Service.filtedGeneralInfo(reportsGeneralInfo.data, reportsSettings.data);
-    event.sender.send("GeneralInfo", filtedGeneralInfo);
+    return await Service.filtedGeneralInfo(reportsGeneralInfo.data, reportsSettings.data);
   } catch (error) {
     return dialog.showErrorBox("Erro", `${error}`);
+  }
+})
+
+ipcMain.handle("getLegacyData", async (res, req) => {
+  try {
+    return await LegacyData.find( device => device.TAG === req);
+  } catch (error) {
+    return dialog.showErrorBox("Erro", `${error}`);
+  }
+})
+
+ipcMain.handle("tasks/post", async (res, req) => {
+  try {
+    await Service.tasksPost(Auth.data.accessToken, req);
+    dialog.showMessageBox(mainWindow, {
+      message: "App atualizado com sucesso!",
+    })
+  } catch (error) {
+    dialog.showErrorBox("Erro", `${error}`);
   }
 })

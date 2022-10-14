@@ -8,7 +8,7 @@ function Services(){
     const response = await axios.post(`${endPoint}/users/sign_in`, params )
     .catch(function (error) {
       throw Error(error);
-    })
+    });
     return response;
   }
 
@@ -16,7 +16,7 @@ function Services(){
     const response = await axios.post(`${endPointReposts}/users/sign_in`, params )
     .catch(function (error) {
       throw Error(error);
-    })
+    });
     return response;
   }
 
@@ -28,7 +28,7 @@ function Services(){
     })
     .catch(function (error) {
       throw Error(error);
-    })
+    });
     return response;
   }
 
@@ -40,7 +40,7 @@ function Services(){
     })
     .catch(function (error) {
       throw Error(error);
-    })
+    });
     return response;
   }
 
@@ -52,9 +52,20 @@ function Services(){
       else if (["sem_sinal", "perdida"].includes(item.current_state)) {
         return true;
       }
-    })
+    });
     return data ;
   }
-};
 
+  Services.prototype.tasksPost = async function (token, body) {
+    return await axios.post(`${endPoint}/tasks`, body , {
+      headers: { 
+        'Authorization': token, 
+        'Content-Type': 'application/json'
+      }
+    })
+    .catch(function (error) {
+      throw Error(error);
+    });
+  };
+}
 module.exports = Services;
