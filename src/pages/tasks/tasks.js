@@ -18,14 +18,14 @@ async function buildTable() {
     data.serial = item.serial;
     data.serial_suffix = serialSuffix(item.serial);
     data.tag = item.tag;
-    data.box_lable = await boxLable(item.tag);
+    data.box_label = await boxLabel(item.tag);
     data.last_message = item.date;
     
     const row = table.insertRow(index);
     row.insertCell(0).innerHTML = data.family;
     row.insertCell(1).innerHTML = data.serial;
     row.insertCell(2).innerHTML = data.tag;
-    row.insertCell(3).innerHTML = data.box_lable;
+    row.insertCell(3).innerHTML = data.box_label;
     row.insertCell(4).innerHTML = convertedTime(data.last_message);
   
     tasksBody.push(data)
@@ -44,7 +44,7 @@ function convertedTime(time) {
   return new Intl.DateTimeFormat('pt-BR', options).format(date);
 }
 
-async function boxLable(tag) { 
+async function boxLabel(tag) { 
   const legacyData = await ipcRenderer.invoke("getLegacyData", tag);
   if (!legacyData || legacyData.Etiqueta == ""){
     return tagConverted(tag)
